@@ -24,6 +24,4 @@ entry *append(char lastName[], entry *e)
     e->pNext = NULL;
 
     return e;
-
-    return NULL;
 }
