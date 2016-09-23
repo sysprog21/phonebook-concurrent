@@ -24,7 +24,9 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
 int main(int argc, char *argv[])
 {
     FILE *fp;
+#ifndef OPT
     int i = 0;
+#endif
     char line[MAX_LAST_NAME_SIZE];
     struct timespec start, end;
     double cpu_time1, cpu_time2;
@@ -46,16 +48,28 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
+#if defined(OPT)
     clock_gettime(CLOCK_REALTIME, &start);
-    while (fgets(line, sizeof(line), fp)) {
-        while (line[i] != '\0')
+		while (fgets(line, sizeof(line), fp))
+      e = append(line, e);
+    clock_gettime(CLOCK_REALTIME, &end);
+    cpu_time1 = diff_in_second(start, end);
+
+#else
+   clock_gettime(CLOCK_REALTIME, &start);
+   while (fgets(line, sizeof(line), fp)) {
+       while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
         i = 0;
         e = append(line, e);
     }
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
+
+#endif
 
     /* close file as soon as possible */
     fclose(fp);

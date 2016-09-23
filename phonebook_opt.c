@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "phonebook_opt.h"
 
@@ -7,10 +9,16 @@
 entry *findName(char lastname[], entry *pHead)
 {
     /* TODO: implement */
+		size_t len = strlen( lastname);
+
 		while (pHead != NULL) {
-    	if (strcasecmp(lastname, pHead->lastName) == 0)
+																																							/*this because the assert test, we can't modify the strcut*/
+																																																/*v*/
+    	if (strncasecmp(lastname, pHead->lastName, len) == 0 && (pHead->lastName[len] == '\n' || pHead->lastName[len] == '\0')){
+				pHead->lastName[len] = '\0';
         return pHead;
-        pHead = pHead->pNext;
+			}
+      pHead = pHead->pNext;
     }
     return NULL;
 }
