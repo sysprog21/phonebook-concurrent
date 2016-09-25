@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPTIONS="--style=kr --indent=spaces=4 --indent-switches"
+OPTIONS="--style=kr --indent=tab --indent-switches"
 
 RETURN=0
 ASTYLE=$(which astyle)
