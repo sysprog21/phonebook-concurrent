@@ -4,6 +4,8 @@
 #include <time.h>
 #include <assert.h>
 
+#include <pthread.h>
+
 #include IMPL
 
 #define DICT_FILE "./dictionary/words.txt"
@@ -50,9 +52,35 @@ int main(int argc, char *argv[])
 #endif
 
 #if defined(OPT)
+
+#ifndef THREAD_NUM
+#define THREAD_NUM 4
+#endif
+
+    pthread_t *tid = ( pthread_t*) malloc( sizeof( pthread_t) * THREAD_NUM);
+    append_a	**app = ( append_a**)	 malloc( sizeof( append_a*)	* THREAD_NUM);
+    for( int i = 0; i < THREAD_NUM; i++)
+        app[i] = new_append_a( fp);
+
     clock_gettime(CLOCK_REALTIME, &start);
-    while (fgets(line, sizeof(line), fp))
-        e = append(line, e);
+    /*while (fgets(line, sizeof(line), fp))
+        e = append(line, e);*/
+    for( int i = 0; i < THREAD_NUM; i++)
+        pthread_create( &tid[i], NULL, (void*) &append, ( void*) app[i]);
+
+    for( int i = 0; i < THREAD_NUM; i++)
+        pthread_join( tid[i], NULL);
+
+    entry* etmp;
+    for( int i = 0; i < THREAD_NUM; i++) {
+        if( i == 0)
+            e->pNext = app[i]->pHead->pNext;
+        else
+            etmp->pNext = app[i]->pHead->pNext;
+
+        etmp = app[i]->pLast;
+    }
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
 

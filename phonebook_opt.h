@@ -1,6 +1,8 @@
 #ifndef _PHONEBOOK_H
 #define _PHONEBOOK_H
 
+#include <pthread.h>
+
 #define MAX_LAST_NAME_SIZE 16
 
 /* TODO: After modifying the original version, uncomment the following
@@ -28,6 +30,19 @@ typedef struct __PHONE_BOOK_ENTRY {
 } entry;
 
 entry *findName(char lastname[], entry *pHead);
-entry *append(char lastName[], entry *e);
+//entry *append(char lastName[], entry *e);
+
+/*Pthread*/
+pthread_mutex_t mux;
+
+typedef struct _append_a {
+    FILE* fp;
+    entry* pHead;
+    entry* pLast;
+} append_a;
+
+append_a* new_append_a( FILE* fp);
+
+void append( void* arg);
 
 #endif
