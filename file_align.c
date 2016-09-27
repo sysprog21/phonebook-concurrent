@@ -3,7 +3,13 @@
 #include <string.h>
 #include <assert.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #define MAX_BUFF_SIZE 100
+
+off_t fsize( char* path);
 
 // ./main orgfName modfName Padded
 int main( int argc, char** argv)
@@ -13,6 +19,8 @@ int main( int argc, char** argv)
 	char* org = argv[1];
 	char* mod = argv[2];
 	int   pad	= atoi( argv[3]);
+
+	printf("orginal file size = %ld\n", fsize( org));
 
 	FILE* fd0 = fopen( org, "r");
 	FILE* fd1 = fopen( mod, "w+");
@@ -40,4 +48,13 @@ int main( int argc, char** argv)
 	fclose( fd1);
 
 	return 0;
+}
+
+off_t fsize( char* path)
+{
+	struct stat st;
+
+	stat( path, &st);
+
+	return st.st_size;
 }
