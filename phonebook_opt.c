@@ -11,7 +11,7 @@ entry *findName(char lastname[], entry *pHead)
 {
     /* TODO: implement */
     size_t len = strlen( lastname);
-    show_entry( pHead);
+    //show_entry( pHead);
     while (pHead != NULL) {
         /*this because the assert test, we can't modify the strcut*/
         /*v*/
@@ -23,36 +23,11 @@ entry *findName(char lastname[], entry *pHead)
             pHead->dtl = ( pdetail) malloc( sizeof( detail));
             return pHead;
         }
-        printf("find string = %s\n", pHead->lastName);
+        dprintf("find string = %s\n", pHead->lastName);
         pHead = pHead->pNext;
     }
     return NULL;
 }
-
-
-
-/*entry *append(char lastName[], entry *e)
-{
-
-    e->pNext = (entry *) malloc(sizeof(entry));
-    e = e->pNext;
-    strcpy(e->lastName, lastName);
-    e->pNext = NULL;
-
-    return e;
-}*/
-
-/*append_a* new_append_a( FILE* fp)
-{
-    append_a* app = ( append_a*) malloc( sizeof( append_a));
-
-    app->fp = fp;
-    entry* tmp = ( entry*) malloc( sizeof( entry));
-
-    app->pHead = (app->pLast = tmp);
-
-    return app;
-}*/
 
 append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd)
 {
@@ -69,29 +44,6 @@ append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd)
     return app;
 }
 
-/*void append( void* arg)
-{
-    append_a* app = ( append_a*) arg;
-    char line[ MAX_LAST_NAME_SIZE];
-
-    while( 1) {
-        pthread_mutex_lock( &mux);
-
-        if( !fgets( line, sizeof( line), app->fp)) {
-            pthread_mutex_unlock( &mux);
-            return;//pthread_exit is better
-        }
-
-        pthread_mutex_unlock( &mux);
-
-        app->pLast->pNext = (entry *) malloc(sizeof(entry));
-        app->pLast = app->pLast->pNext;
-
-        strcpy(app->pLast->lastName, line);
-        app->pLast->pNext = NULL;
-    }
-}*/
-
 void append( void* arg)
 {
     struct timespec start, end;
@@ -100,34 +52,18 @@ void append( void* arg)
     clock_gettime( CLOCK_REALTIME, &start);
 
     append_a* app = ( append_a*) arg;
-    //char line[ MAX_LAST_NAME_SIZE];
-
-    /*while( 1) {
-        pthread_mutex_lock( &mux);
-
-        if( !fgets( line, sizeof( line), app->fp)) {
-            pthread_mutex_unlock( &mux);
-            return;//pthread_exit is better
-        }
-
-        pthread_mutex_unlock( &mux);
-
-        app->pLast->pNext = (entry *) malloc(sizeof(entry));
-        app->pLast = app->pLast->pNext;
-
-        strcpy(app->pLast->lastName, line);
-        app->pLast->pNext = NULL;
-    }*/
 
 
+    entry* eny = (entry *) malloc(sizeof(entry));
     int count = 0;
     for( char* i = app->ptr; i < app->eptr; i += MAX_LAST_NAME_SIZE * app->nthread, count++) {
+        //app->pLast->pNext = eny;
         app->pLast->pNext = (entry *) malloc(sizeof(entry));
         app->pLast = app->pLast->pNext;
 
-        //strcpy(app->pLast->lastName, app->ptr + i);
+        //strcpy(app->pLast->lastName, app->ptr + i);//TODO: we could
         app->pLast->lastName = i;
-        //dprintf("thread %d append string = %s\n", app->tid, app->pLast->lastName);
+        dprintf("thread %d append string = %s\n", app->tid, app->pLast->lastName);
         app->pLast->pNext = NULL;
     }
     clock_gettime(CLOCK_REALTIME, &end);
@@ -135,7 +71,7 @@ void append( void* arg)
 
     printf("thread take %lf sec, count %d\n", cpu_time, count);
 
-    return;
+    pthread_exit( NULL);
 }
 
 void show_entry( entry* pHead)

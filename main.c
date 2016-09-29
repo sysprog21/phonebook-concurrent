@@ -10,9 +10,6 @@
 #include <sys/mman.h>
 
 #include IMPL
-//#ifdef OPT
-//	#define  _GNU_SOURCE
-//#endif
 
 #define DICT_FILE "./dictionary/words.txt"
 
@@ -61,9 +58,6 @@ int main(int argc, char *argv[])
 
     off_t fs = fsize( ALIGN_FILE);
 
-    char* map = mmap( NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
-
-    assert( map && "mmap error");
 #endif
 
     /* build the entry */
@@ -83,6 +77,12 @@ int main(int argc, char *argv[])
 #define THREAD_NUM 4
 #endif
 
+    clock_gettime(CLOCK_REALTIME, &start);
+
+    char* map = mmap( NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
+
+    assert( map && "mmap error");
+
     pthread_setconcurrency( THREAD_NUM + 1);//  _GNU_SOURCE
 
     pthread_t *tid = ( pthread_t*) malloc( sizeof( pthread_t) * THREAD_NUM);
@@ -90,18 +90,19 @@ int main(int argc, char *argv[])
     for( int i = 0; i < THREAD_NUM; i++)
         app[i] = new_append_a( map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM);
 
-    clock_gettime(CLOCK_REALTIME, &start);
-    /*while (fgets(line, sizeof(line), fp))
-        e = append(line, e);*/
+    clock_gettime(CLOCK_REALTIME, &mid);
     for( int i = 0; i < THREAD_NUM; i++)
         pthread_create( &tid[i], NULL, (void*) &append, ( void*) app[i]);
 
-    clock_gettime(CLOCK_REALTIME, &mid);
-    for( int i = 0; i < THREAD_NUM; i++)
+    //clock_gettime(CLOCK_REALTIME, &mid);
+    for( int i = 0; i < THREAD_NUM; i++) {
         pthread_join( tid[i], NULL);
+        //clock_gettime(CLOCK_REALTIME, &mid);
+    }
 
     entry* etmp;
     pHead = pHead->pNext;
+    //clock_gettime(CLOCK_REALTIME, &mid);
     for( int i = 0; i < THREAD_NUM; i++) {
         if( i == 0) {
             pHead = app[i]->pHead->pNext;
@@ -113,8 +114,8 @@ int main(int argc, char *argv[])
 
         etmp = app[i]->pLast;
         dprintf("Connect %d tail string %s %p\n", i, app[i]->pLast->lastName, app[i]->ptr);
-        printf("round %d\n", i);
-        show_entry( pHead);
+        dprintf("round %d\n", i);
+        //show_entry( pHead);
 
     }
     //etmp->pNext = NULL;//it is NULL
