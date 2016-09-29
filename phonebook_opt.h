@@ -47,12 +47,13 @@ typedef struct _append_a {
     char* eptr;
     int tid;
     int nthread;
+    entry* entryStart;
     entry* pHead;
     entry* pLast;
 } append_a;
 
 //append_a* new_append_a( FILE* fp);
-append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd);
+append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd, entry* start);
 
 void append( void* arg);
 

@@ -29,7 +29,7 @@ entry *findName(char lastname[], entry *pHead)
     return NULL;
 }
 
-append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd)
+append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd, entry* start)
 {
     append_a* app = ( append_a*) malloc( sizeof( append_a));
 
@@ -37,9 +37,10 @@ append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd)
     app->eptr  = eptr;
     app->tid = tid;
     app->nthread = ntd;
-    entry* tmp = ( entry*) malloc( sizeof( entry));
+    //entry* tmp = start;
+    app->entryStart = start;
 
-    app->pHead = (app->pLast = tmp);
+    app->pHead = (app->pLast = app->entryStart);
 
     return app;
 }
@@ -54,11 +55,12 @@ void append( void* arg)
     append_a* app = ( append_a*) arg;
 
 
-    entry* eny = (entry *) malloc(sizeof(entry));
+    //entry* eny = (entry *) malloc(sizeof(entry));
     int count = 0;
-    for( char* i = app->ptr; i < app->eptr; i += MAX_LAST_NAME_SIZE * app->nthread, count++) {
+    entry* j = app->entryStart;
+    for( char* i = app->ptr; i < app->eptr; i += MAX_LAST_NAME_SIZE * app->nthread, j += app->nthread,count++) {
         //app->pLast->pNext = eny;
-        app->pLast->pNext = (entry *) malloc(sizeof(entry));
+        app->pLast->pNext = j;
         app->pLast = app->pLast->pNext;
 
         //strcpy(app->pLast->lastName, app->ptr + i);//TODO: we could
@@ -69,7 +71,7 @@ void append( void* arg)
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time = diff_in_second(start, end);
 
-    printf("thread take %lf sec, count %d\n", cpu_time, count);
+    dprintf("thread take %lf sec, count %d\n", cpu_time, count);
 
     pthread_exit( NULL);
 }

@@ -83,12 +83,16 @@ int main(int argc, char *argv[])
 
     assert( map && "mmap error");
 
+    entry* entry_pool = ( entry*) malloc( sizeof( entry) * fs/MAX_LAST_NAME_SIZE);//malloc at begin
+
+    assert( entry_pool && "entry_pool error");
+
     pthread_setconcurrency( THREAD_NUM + 1);//  _GNU_SOURCE
 
     pthread_t *tid = ( pthread_t*) malloc( sizeof( pthread_t) * THREAD_NUM);
     append_a	**app = ( append_a**)	 malloc( sizeof( append_a*)	* THREAD_NUM);
     for( int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_a( map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM);
+        app[i] = new_append_a( map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
     for( int i = 0; i < THREAD_NUM; i++)
@@ -174,12 +178,18 @@ int main(int argc, char *argv[])
 
     printf("execution time of append() : %lf sec\n", cpu_time1);
 #ifdef OPT
-    printf("execution time of append() exclude thread_create : %lf sec\n", cpu_time_mid);
+    //printf("execution time of append() exclude thread_create : %lf sec\n", cpu_time_mid);
 #endif
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
+#ifndef OPT
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
-
+#else
+    free( entry_pool);
+    free( tid);
+    free( app);
+    munmap( map, fs);
+#endif
     return 0;
 }
