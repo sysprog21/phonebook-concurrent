@@ -2,6 +2,7 @@
 #define _PHONEBOOK_H
 
 #include <pthread.h>
+#include <time.h>
 
 #define MAX_LAST_NAME_SIZE 16
 
@@ -24,7 +25,7 @@ typedef struct _detail {
 typedef detail *pdetail;
 
 typedef struct __PHONE_BOOK_ENTRY {
-    char lastName[MAX_LAST_NAME_SIZE];
+    char* lastName;
     struct __PHONE_BOOK_ENTRY *pNext;
     pdetail dtl;
 } entry;
@@ -32,17 +33,31 @@ typedef struct __PHONE_BOOK_ENTRY {
 entry *findName(char lastname[], entry *pHead);
 //entry *append(char lastName[], entry *e);
 
-/*Pthread*/
-pthread_mutex_t mux;
+/****Pthread****/
+//pthread_mutex_t mux;
+
+/*typedef struct _append_a {
+    FILE* fp;
+    entry* pHead;
+    entry* pLast;
+} append_a;*/
 
 typedef struct _append_a {
-    FILE* fp;
+    char* ptr;
+    char* eptr;
+    int tid;
+    int nthread;
     entry* pHead;
     entry* pLast;
 } append_a;
 
-append_a* new_append_a( FILE* fp);
+//append_a* new_append_a( FILE* fp);
+append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd);
 
 void append( void* arg);
+
+void show_entry( entry* pHead);
+
+static double diff_in_second(struct timespec t1, struct timespec t2);
 
 #endif
