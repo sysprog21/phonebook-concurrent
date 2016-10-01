@@ -34,7 +34,6 @@ int main(int argc, char *argv[])
     char line[MAX_LAST_NAME_SIZE];
 #else
     struct timespec mid;
-    double cpu_time_mid;
 #endif
     struct timespec start, end;
     double cpu_time1, cpu_time2;
@@ -126,7 +125,6 @@ int main(int argc, char *argv[])
 
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-    cpu_time_mid = diff_in_second( mid, end);
 
 #else
     clock_gettime(CLOCK_REALTIME, &start);
@@ -177,9 +175,6 @@ int main(int argc, char *argv[])
     fclose(output);
 
     printf("execution time of append() : %lf sec\n", cpu_time1);
-#ifdef OPT
-    //printf("execution time of append() exclude thread_create : %lf sec\n", cpu_time_mid);
-#endif
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
 #ifndef OPT
