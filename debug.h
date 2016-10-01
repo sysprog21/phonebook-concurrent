@@ -7,7 +7,7 @@
  */
 #define syserr(variable, function) \
     if (variable) { \
-        perror( function); \
+        perror(function); \
         exit(EXIT_FAILURE); \
     }
 
@@ -20,7 +20,9 @@
 #ifdef DEBUG
 #define dprintf( ...) printf("DEBUG: " __VA_ARGS__)
 #define eprintf( ...) \
-    fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__)
+    do { \
+        fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__); \
+    } while (0)
 #else
 #define dprintf( ...)
 #define eprintf( ...) \

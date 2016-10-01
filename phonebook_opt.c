@@ -11,8 +11,8 @@ entry *findName(char lastname[], entry *pHead)
     size_t len = strlen( lastname);
     while (pHead != NULL) {
         if (strncasecmp(lastname, pHead->lastName, len) == 0
-            && (pHead->lastName[len] == '\n' ||
-                pHead->lastName[len] == '\0')) {
+                && (pHead->lastName[len] == '\n' ||
+                    pHead->lastName[len] == '\0')) {
             pHead->lastName = (char *) malloc( sizeof(char) * MAX_LAST_NAME_SIZE);
             memset(pHead->lastName, '\0', MAX_LAST_NAME_SIZE);
             strcpy(pHead->lastName, lastname);
@@ -47,13 +47,13 @@ void append(void *arg)
 
     clock_gettime( CLOCK_REALTIME, &start);
 
-    append_a* app = ( append_a*) arg;
+    append_a *app = (append_a *) arg;
 
     int count = 0;
     entry *j = app->entryStart;
     for (char *i = app->ptr; i < app->eptr;
-         i += MAX_LAST_NAME_SIZE * app->nthread,
-         j += app->nthread,count++) {
+            i += MAX_LAST_NAME_SIZE * app->nthread,
+            j += app->nthread,count++) {
         app->pLast->pNext = j;
         app->pLast = app->pLast->pNext;
 
@@ -66,7 +66,7 @@ void append(void *arg)
 
     dprintf("thread take %lf sec, count %d\n", cpu_time, count);
 
-    pthread_exit( NULL);
+    pthread_exit(NULL);
 }
 
 void show_entry(entry *pHead)

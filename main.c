@@ -51,11 +51,9 @@ int main(int argc, char *argv[])
 #include "debug.h"
 #include <fcntl.h>
 #define ALIGN_FILE "align.txt"
-    file_align( DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
-    int fd = open( ALIGN_FILE, O_RDONLY | O_NONBLOCK);
-
+    file_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
+    int fd = open(ALIGN_FILE, O_RDONLY | O_NONBLOCK);
     off_t fs = fsize( ALIGN_FILE);
-
 #endif
 
     /* build the entry */
@@ -81,7 +79,7 @@ int main(int argc, char *argv[])
 
     assert(map && "mmap error");
 
-    // allocate at beginning
+    /* allocate at beginning */
     entry *entry_pool = (entry *) malloc(sizeof(entry) * fs / MAX_LAST_NAME_SIZE);
 
     assert(entry_pool && "entry_pool error");
