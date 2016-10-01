@@ -1,8 +1,8 @@
 # Summary
 
-* Understand the impact of cache miss
-* Get familiar with the performance analysis tool
+* Learn POSIX Thread Programming
 * Realize the software optimizations
+* Code refactoring
 
 # Indenting Code
 You can use AStyle ([Artistic Style](http://astyle.sourceforge.net/)) source code indenter to
