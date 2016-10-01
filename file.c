@@ -9,39 +9,32 @@
 
 #define MAX_BUFF_SIZE 1000
 
-void file_align( char* org, char* mod, int pad)
+void file_align(char *org, char *mod, int pad)
 {
-    FILE* fd0 = fopen( org, "r");
-    FILE* fd1 = fopen( mod, "w+");
+    FILE *fd0 = fopen(org, "r");
+    FILE *fd1 = fopen(mod, "w+");
 
     char rbuf[MAX_BUFF_SIZE];
     int suffix;
 
-    char* wbuf = ( char*) malloc( sizeof( char) * pad);
+    char *wbuf = (char *) malloc(sizeof(char) * pad);
 
-    while( fgets( rbuf, sizeof( rbuf), fd0)) {
-
+    while (fgets(rbuf, sizeof(rbuf), fd0)) {
         memset( wbuf, '\0', pad);
-        //wbuf[ pad - 1] = '\n';
 
-        if( (suffix = (pad - strlen( rbuf))) != 0 )
-            //strncpy( wbuf, rbuf,strlen( rbuf));
-            strcpy( wbuf, rbuf);
+        if ((suffix = (pad - strlen(rbuf))) != 0)
+            strcpy(wbuf, rbuf);
 
-        fwrite( wbuf, pad, 1, fd1);
+        fwrite(wbuf, pad, 1, fd1);
     }
-
-    //fwrite( EOF, 1, 1, fd1);
 
     fclose( fd0);
     fclose( fd1);
 }
 
-off_t fsize( char* path)
+off_t fsize(char *path)
 {
     struct stat st;
-
     stat( path, &st);
-
     return st.st_size;
 }

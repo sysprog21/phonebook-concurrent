@@ -6,8 +6,6 @@
 
 #define MAX_LAST_NAME_SIZE 16
 
-/* TODO: After modifying the original version, uncomment the following
- * line to set OPT properly */
 #define OPT 1
 
 typedef struct _detail {
@@ -25,39 +23,28 @@ typedef struct _detail {
 typedef detail *pdetail;
 
 typedef struct __PHONE_BOOK_ENTRY {
-    char* lastName;
+    char *lastName;
     struct __PHONE_BOOK_ENTRY *pNext;
     pdetail dtl;
 } entry;
 
 entry *findName(char lastname[], entry *pHead);
-//entry *append(char lastName[], entry *e);
-
-/****Pthread****/
-//pthread_mutex_t mux;
-
-/*typedef struct _append_a {
-    FILE* fp;
-    entry* pHead;
-    entry* pLast;
-} append_a;*/
 
 typedef struct _append_a {
-    char* ptr;
-    char* eptr;
+    char *ptr;
+    char *eptr;
     int tid;
     int nthread;
-    entry* entryStart;
-    entry* pHead;
-    entry* pLast;
+    entry *entryStart;
+    entry *pHead;
+    entry *pLast;
 } append_a;
 
-//append_a* new_append_a( FILE* fp);
-append_a* new_append_a( char* ptr, char* eptr, int tid, int ntd, entry* start);
+append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd, entry *start);
 
-void append( void* arg);
+void append(void *arg);
 
-void show_entry( entry* pHead);
+void show_entry(entry *pHead);
 
 static double diff_in_second(struct timespec t1, struct timespec t2);
 

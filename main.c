@@ -39,10 +39,9 @@ int main(int argc, char *argv[])
     double cpu_time1, cpu_time2;
 
 #ifndef OPT
-
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
-    if (fp == NULL) {
+    if (!fp) {
         printf("cannot open the file\n");
         return -1;
     }
@@ -78,36 +77,33 @@ int main(int argc, char *argv[])
 
     clock_gettime(CLOCK_REALTIME, &start);
 
-    char* map = mmap( NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
+    char *map = mmap(NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
 
-    assert( map && "mmap error");
+    assert(map && "mmap error");
 
-    entry* entry_pool = ( entry*) malloc( sizeof( entry) * fs/MAX_LAST_NAME_SIZE);//malloc at begin
+    // allocate at beginning
+    entry *entry_pool = (entry *) malloc(sizeof(entry) * fs / MAX_LAST_NAME_SIZE);
 
-    assert( entry_pool && "entry_pool error");
+    assert(entry_pool && "entry_pool error");
 
-    pthread_setconcurrency( THREAD_NUM + 1);//  _GNU_SOURCE
+    pthread_setconcurrency(THREAD_NUM + 1);
 
-    pthread_t *tid = ( pthread_t*) malloc( sizeof( pthread_t) * THREAD_NUM);
-    append_a	**app = ( append_a**)	 malloc( sizeof( append_a*)	* THREAD_NUM);
-    for( int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_a( map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM, entry_pool + i);
+    pthread_t *tid = (pthread_t *) malloc(sizeof( pthread_t) * THREAD_NUM);
+    append_a **app = (append_a **) malloc(sizeof(append_a *) * THREAD_NUM);
+    for (int i = 0; i < THREAD_NUM; i++)
+        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
-    for( int i = 0; i < THREAD_NUM; i++)
-        pthread_create( &tid[i], NULL, (void*) &append, ( void*) app[i]);
+    for (int i = 0; i < THREAD_NUM; i++)
+        pthread_create( &tid[i], NULL, (void *) &append, (void *) app[i]);
 
-    //clock_gettime(CLOCK_REALTIME, &mid);
-    for( int i = 0; i < THREAD_NUM; i++) {
-        pthread_join( tid[i], NULL);
-        //clock_gettime(CLOCK_REALTIME, &mid);
-    }
+    for (int i = 0; i < THREAD_NUM; i++)
+        pthread_join(tid[i], NULL);
 
-    entry* etmp;
+    entry *etmp;
     pHead = pHead->pNext;
-    //clock_gettime(CLOCK_REALTIME, &mid);
-    for( int i = 0; i < THREAD_NUM; i++) {
-        if( i == 0) {
+    for (int i = 0; i < THREAD_NUM; i++) {
+        if (i == 0) {
             pHead = app[i]->pHead->pNext;
             dprintf("Connect %d head string %s %p\n", i, app[i]->pHead->pNext->lastName, app[i]->ptr);
         } else {
@@ -118,10 +114,7 @@ int main(int argc, char *argv[])
         etmp = app[i]->pLast;
         dprintf("Connect %d tail string %s %p\n", i, app[i]->pLast->lastName, app[i]->ptr);
         dprintf("round %d\n", i);
-        //show_entry( pHead);
-
     }
-    //etmp->pNext = NULL;//it is NULL
 
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
@@ -181,10 +174,10 @@ int main(int argc, char *argv[])
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
 #else
-    free( entry_pool);
-    free( tid);
-    free( app);
-    munmap( map, fs);
+    free(entry_pool);
+    free(tid);
+    free(app);
+    munmap(map, fs);
 #endif
     return 0;
 }

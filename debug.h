@@ -5,21 +5,26 @@
 /**
  * error detect for unix command
  */
-#define syserr( variable, function) \
-	if( variable){ \
-		perror( function); \
-		exit( EXIT_FAILURE);}
+#define syserr(variable, function) \
+    if (variable) { \
+        perror( function); \
+        exit(EXIT_FAILURE); \
+    }
 
 /**
- *	Define own log and debug output.
+ * Define own log and debug output.
  *
- * 		"__VA_ARG__" is varible MACRO substitue. It can make MACRO printf
- * 			include formats and arguments.
+ * "__VA_ARG__" is varible MACRO substitue. It can make MACRO printf
+ * include formats and arguments.
  */
 #ifdef DEBUG
-#define dprintf( ...) printf( "DEBUG: " __VA_ARGS__ )
-#define eprintf( ...) fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__ ) ///< "fprintf( stderr, "ERROR: " __VA_ARGS__)" will fail
+#define dprintf( ...) printf("DEBUG: " __VA_ARGS__)
+#define eprintf( ...) \
+    fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__)
 #else
 #define dprintf( ...)
-#define eprintf( ...) fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__ )
+#define eprintf( ...) \
+    do { \
+        fprintf(stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__); \
+    } while (0)
 #endif
