@@ -18,15 +18,15 @@
  * include formats and arguments.
  */
 #ifdef DEBUG
-#define dprintf( ...) printf("DEBUG: " __VA_ARGS__)
-#define eprintf( ...) \
+#define dprintf(...) printf("DEBUG: " __VA_ARGS__)
+#define eprintf(...) \
     do { \
-        fprintf( stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__); \
+        fprintf(stderr, "ERROR: "); fprintf(stderr, __VA_ARGS__); \
     } while (0)
 #else
-#define dprintf( ...)
-#define eprintf( ...) \
+#define dprintf(...)
+#define eprintf(...) \
     do { \
-        fprintf(stderr, "ERROR: "); fprintf( stderr, __VA_ARGS__); \
+        fprintf(stderr, "ERROR: "); fprintf(stderr, __VA_ARGS__); \
     } while (0)
 #endif

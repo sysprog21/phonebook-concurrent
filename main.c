@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 #define ALIGN_FILE "align.txt"
     file_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
     int fd = open(ALIGN_FILE, O_RDONLY | O_NONBLOCK);
-    off_t fs = fsize( ALIGN_FILE);
+    off_t fs = fsize(ALIGN_FILE);
 #endif
 
     /* build the entry */
@@ -72,24 +72,24 @@ int main(int argc, char *argv[])
 #ifndef THREAD_NUM
 #define THREAD_NUM 4
 #endif
-
     clock_gettime(CLOCK_REALTIME, &start);
 
     char *map = mmap(NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
-
     assert(map && "mmap error");
 
     /* allocate at beginning */
-    entry *entry_pool = (entry *) malloc(sizeof(entry) * fs / MAX_LAST_NAME_SIZE);
+    entry *entry_pool = (entry *) malloc(sizeof(entry) *
+                                         fs / MAX_LAST_NAME_SIZE);
 
     assert(entry_pool && "entry_pool error");
 
     pthread_setconcurrency(THREAD_NUM + 1);
 
-    pthread_t *tid = (pthread_t *) malloc(sizeof( pthread_t) * THREAD_NUM);
+    pthread_t *tid = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
     append_a **app = (append_a **) malloc(sizeof(append_a *) * THREAD_NUM);
     for (int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + fs, i, THREAD_NUM, entry_pool + i);
+        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + fs, i,
+                              THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
     for (int i = 0; i < THREAD_NUM; i++)
@@ -103,21 +103,23 @@ int main(int argc, char *argv[])
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
             pHead = app[i]->pHead->pNext;
-            dprintf("Connect %d head string %s %p\n", i, app[i]->pHead->pNext->lastName, app[i]->ptr);
+            dprintf("Connect %d head string %s %p\n", i,
+                    app[i]->pHead->pNext->lastName, app[i]->ptr);
         } else {
             etmp->pNext = app[i]->pHead->pNext;
-            dprintf("Connect %d head string %s %p\n", i, app[i]->pHead->pNext->lastName, app[i]->ptr);
+            dprintf("Connect %d head string %s %p\n", i,
+                    app[i]->pHead->pNext->lastName, app[i]->ptr);
         }
 
         etmp = app[i]->pLast;
-        dprintf("Connect %d tail string %s %p\n", i, app[i]->pLast->lastName, app[i]->ptr);
+        dprintf("Connect %d tail string %s %p\n", i,
+                app[i]->pLast->lastName, app[i]->ptr);
         dprintf("round %d\n", i);
     }
 
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-
-#else
+#else /* ! OPT */
     clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
@@ -129,7 +131,6 @@ int main(int argc, char *argv[])
 
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-
 #endif
 
 #ifndef OPT
