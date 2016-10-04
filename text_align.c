@@ -10,7 +10,7 @@
 
 #define MAX_BUFF_SIZE 100
 
-static off_t fsize(char *path);
+static off_t fsize(const char *path);
 
 /**
  * @brief Pad each line of the text file _origiFileName_
@@ -60,7 +60,7 @@ int text_align(const char *originFileName,
 /**
  * @brief Get the size of the file in bytes.
  */
-static off_t fsize(char *path)
+static off_t fsize(const char *path)
 {
     struct stat st;
     stat(path, &st);
