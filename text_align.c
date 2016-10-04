@@ -18,7 +18,7 @@ static off_t fsize(char *path);
 int main(int argc, char *argv[])
 {
     assert(argc == 4 &&
-            "./main <originFileName> <alignedFileName> <PadToLen>");
+           "./main <originFileName> <alignedFileName> <PadToLen>");
 
     char *org = argv[1];
     char *mod = argv[2];
@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
 
     fclose(fd0);
     fclose(fd1);
+    free(wbuf);
 
     return 0;
 }
