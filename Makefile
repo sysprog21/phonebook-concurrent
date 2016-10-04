@@ -16,7 +16,7 @@ all: $(EXEC)
 
 SRCS_common = main.c
 
-file_align: file_align.c
+text_align: text_align.c
 	$(CC) $(CFLAGS_common) $^ -o $@
 
 phonebook_orig: $(SRCS_common) phonebook_orig.c phonebook_orig.h
@@ -53,4 +53,4 @@ calculate: calculate.c
 .PHONY: clean
 clean:
 	$(RM) $(EXEC) *.o perf.* \
-	      	calculate orig.txt opt.txt output.txt runtime.png file_align align.txt
+	      	calculate orig.txt opt.txt output.txt runtime.png text_align

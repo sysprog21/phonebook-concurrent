@@ -11,12 +11,14 @@
 
 static off_t fsize(char *path);
 
-/* usage:
- *   ./main orgfName modfName Padded
+/**
+ * @brief Pad each line of the text file _origiFileName_
+ *  to _PadToLen_ characters and write to the file _alignedFileName_.
  */
 int main(int argc, char *argv[])
 {
-    assert(argc == 4 && "./main orgfName modfName Padded");
+    assert(argc == 4 &&
+            "./main <originFileName> <alignedFileName> <PadToLen>");
 
     char *org = argv[1];
     char *mod = argv[2];
@@ -32,11 +34,12 @@ int main(int argc, char *argv[])
 
     char *wbuf = (char *) malloc(sizeof(char) * pad);
 
+    // Read each line from input file and pad to "pad" characters.
     while (fgets(rbuf, sizeof(rbuf), fd0)) {
         memset(wbuf, '\0', pad);
 
         if ((suffix = (pad - strlen(rbuf))) != 0)
-            strncpy(wbuf, rbuf,strlen(rbuf));
+            strncpy(wbuf, rbuf, strlen(rbuf));
 
         fwrite(wbuf, pad, 1, fd1);
     }
@@ -47,6 +50,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+/**
+ * @brief Get the size of the file in bytes.
+ */
 static off_t fsize(char *path)
 {
     struct stat st;
