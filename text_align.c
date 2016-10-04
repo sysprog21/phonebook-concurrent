@@ -38,8 +38,14 @@ int main(int argc, char *argv[])
     while (fgets(rbuf, sizeof(rbuf), fd0)) {
         memset(wbuf, '\0', pad);
 
-        if ((suffix = (pad - strlen(rbuf))) != 0)
-            strncpy(wbuf, rbuf, strlen(rbuf));
+        suffix = pad - strlen(rbuf);
+        // The length of input text is longer than the length to padding to.
+        // Warn the user, and still write to the output file but with only
+        // first "PadToLen" bytes.
+        if (suffix < 0)
+            printf("Warning:"
+                   " The length of %s is longer than %d.\n", rbuf, pad);
+        strncpy(wbuf, rbuf, strlen(rbuf));
 
         fwrite(wbuf, pad, 1, fd1);
     }
