@@ -12,4 +12,5 @@ orig.txt
 opt.txt
 output.txt
 runtime.png
-align.txt
+*aligned.txt
+text_align
