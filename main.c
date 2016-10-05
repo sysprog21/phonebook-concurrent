@@ -179,9 +179,18 @@ int main(int argc, char *argv[])
         free(e);
     }
 #else
+    // Free the allocated detail entry
+    e = pHead;
+    while (e != NULL) {
+        if (e->dtl != NULL)
+            free(e->dtl);
+        e = e->pNext;
+    }
+
     free(entry_pool);
     for (int i = 0; i < THREAD_NUM; ++i)
         free(thread_args[i]);
+
     munmap(map, file_size);
     close(fd);
 #endif
