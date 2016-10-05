@@ -85,9 +85,10 @@ int main(int argc, char *argv[])
 
     pthread_setconcurrency(THREAD_NUM + 1);
 
-    pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
-    thread_arg **thread_args = (thread_arg **) malloc(sizeof(thread_arg *) * THREAD_NUM);
+    pthread_t threads[THREAD_NUM];
+    thread_arg *thread_args[THREAD_NUM];
     for (int i = 0; i < THREAD_NUM; i++)
+        // Created by malloc, remeber to free them.
         thread_args[i] = createThead_arg(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
                                          THREAD_NUM, entry_pool + i);
 
@@ -169,6 +170,7 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
+    /* Release the memory */
 #ifndef OPT
     while (pHead != NULL) {
         e = pHead;
@@ -177,8 +179,8 @@ int main(int argc, char *argv[])
     }
 #else
     free(entry_pool);
-    free(threads);
-    free(thread_args);
+    for (int i = 0; i < THREAD_NUM; ++i)
+        free(thread_args[i]);
     munmap(map, file_size);
     close(fd);
 #endif
