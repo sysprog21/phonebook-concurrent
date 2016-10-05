@@ -53,4 +53,4 @@ calculate: calculate.c
 .PHONY: clean
 clean:
 	$(RM) $(EXEC) *.o perf.* \
-	      	calculate orig.txt opt.txt output.txt runtime.png test/text_align
+	      	calculate orig.txt opt.txt output.txt runtime.png align.txt
