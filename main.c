@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
 
-    char *map = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
+    char *map = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
     assert(map && "mmap error");
 
     /* allocate at beginning */

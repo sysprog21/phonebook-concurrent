@@ -13,11 +13,9 @@ entry *findName(char lastname[], entry *pHead)
         if (strncasecmp(lastname, pHead->lastName, len) == 0
                 && (pHead->lastName[len] == '\n' ||
                     pHead->lastName[len] == '\0')) {
-            pHead->lastName = (char *) malloc(sizeof(char) *
-                                              MAX_LAST_NAME_SIZE);
-            memset(pHead->lastName, '\0', MAX_LAST_NAME_SIZE);
-            strcpy(pHead->lastName, lastname);
-            pHead->dtl = (pdetail) malloc(sizeof(detail));
+            pHead->lastName[len] = '\0';
+            if (pHead->dtl == NULL)
+                pHead->dtl = (pdetail) malloc(sizeof(detail));
             return pHead;
         }
         dprintf("find string = %s\n", pHead->lastName);
@@ -63,6 +61,7 @@ void append(void *arg)
         t_arg->lEntry_tail = t_arg->lEntry_tail->pNext;
         t_arg->lEntry_tail->lastName = i;
         t_arg->lEntry_tail->pNext = NULL;
+        t_arg->lEntry_tail->dtl = NULL;
         dprintf("thread %d t_argend string = %s\n",
                 t_arg->threadID, t_arg->lEntry_tail->lastName);
     }
