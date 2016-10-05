@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 #define ALIGN_FILE "align.txt"
     text_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
     int fd = open(ALIGN_FILE, O_RDONLY | O_NONBLOCK);
-    off_t fs = fsize(ALIGN_FILE);
+    off_t file_size = fsize(ALIGN_FILE);
 #endif
 
     /* build the entry */
@@ -74,12 +74,12 @@ int main(int argc, char *argv[])
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
 
-    char *map = mmap(NULL, fs, PROT_READ, MAP_SHARED, fd, 0);
+    char *map = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
     assert(map && "mmap error");
 
     /* allocate at beginning */
     entry *entry_pool = (entry *) malloc(sizeof(entry) *
-                                         fs / MAX_LAST_NAME_SIZE);
+                                         file_size / MAX_LAST_NAME_SIZE);
 
     assert(entry_pool && "entry_pool error");
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     pthread_t *tid = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
     append_a **app = (append_a **) malloc(sizeof(append_a *) * THREAD_NUM);
     for (int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + fs, i,
+        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
                               THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
     free(entry_pool);
     free(tid);
     free(app);
-    munmap(map, fs);
+    munmap(map, file_size);
 #endif
     return 0;
 }
