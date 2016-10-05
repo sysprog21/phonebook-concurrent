@@ -11,6 +11,22 @@
 
 #include IMPL
 
+#ifndef OPT
+#define OUTPUT_FILE "orig.txt"
+
+#else
+#include "text_align.h"
+#include "debug.h"
+#include <fcntl.h>
+#define ALIGN_FILE "align.txt"
+#define OUTPUT_FILE "opt.txt"
+
+#ifndef THREAD_NUM
+#define THREAD_NUM 4
+#endif
+
+#endif
+
 #define DICT_FILE "./dictionary/words.txt"
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
@@ -38,6 +54,7 @@ int main(int argc, char *argv[])
     struct timespec start, end;
     double cpu_time1, cpu_time2;
 
+    /*========== File preprocessing ==========*/
 #ifndef OPT
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
@@ -46,17 +63,12 @@ int main(int argc, char *argv[])
         return -1;
     }
 #else
-
-#include "text_align.h"
-#include "debug.h"
-#include <fcntl.h>
-#define ALIGN_FILE "align.txt"
     text_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
     int fd = open(ALIGN_FILE, O_RDONLY | O_NONBLOCK);
     off_t file_size = fsize(ALIGN_FILE);
 #endif
 
-    /* build the entry */
+    /*========== Build the entry ==========*/
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
     printf("size of entry : %lu bytes\n", sizeof(entry));
@@ -67,31 +79,27 @@ int main(int argc, char *argv[])
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
 
-#if defined(OPT)
-
-#ifndef THREAD_NUM
-#define THREAD_NUM 4
-#endif
     clock_gettime(CLOCK_REALTIME, &start);
-
-    char *map = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-    assert(map && "mmap error");
-
-    /* allocate at beginning */
-    entry *entry_pool = (entry *) malloc(sizeof(entry) *
-                                         file_size / MAX_LAST_NAME_SIZE);
-
-    assert(entry_pool && "entry_pool error");
-
-    pthread_setconcurrency(THREAD_NUM + 1);
-
+#if defined(OPT)
+    char *map;
+    entry *entry_pool, *tmp;
     pthread_t threads[THREAD_NUM];
     thread_arg *thread_args[THREAD_NUM];
+
+    /* Allocate the resource at first */
+    map = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    assert(map && "mmap error");
+    entry_pool = (entry *)malloc(sizeof(entry) *
+                                 file_size / MAX_LAST_NAME_SIZE);
+    assert(entry_pool && "entry_pool error");
+
+    /* Prepare for multi-threading */
+    pthread_setconcurrency(THREAD_NUM + 1);
     for (int i = 0; i < THREAD_NUM; i++)
         // Created by malloc, remeber to free them.
         thread_args[i] = createThead_arg(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
                                          THREAD_NUM, entry_pool + i);
-
+    /* Deliver the jobs to all threads and wait for completing */
     clock_gettime(CLOCK_REALTIME, &mid);
     for (int i = 0; i < THREAD_NUM; i++)
         pthread_create(&threads[i], NULL, (void *)&append, (void *)thread_args[i]);
@@ -118,11 +126,7 @@ int main(int argc, char *argv[])
                 thread_args[i]->lEntry_tail->lastName, thread_args[i]->data_begin);
         dprintf("round %d\n", i);
     }
-
-    clock_gettime(CLOCK_REALTIME, &end);
-    cpu_time1 = diff_in_second(start, end);
 #else /* ! OPT */
-    clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -130,18 +134,16 @@ int main(int argc, char *argv[])
         i = 0;
         e = append(line, e);
     }
-
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
-#endif
 
 #ifndef OPT
     /* close file as soon as possible */
     fclose(fp);
 #endif
 
-    e = pHead;
-
+    /*========== Find the entry ==========*/
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
@@ -153,25 +155,22 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
-    /* compute the execution time */
+    /* Compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
     findName(input, e);
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
+    /* Write the execution time to file. */
     FILE *output;
-#if defined(OPT)
-    output = fopen("opt.txt", "a");
-#else
-    output = fopen("orig.txt", "a");
-#endif
+    output = fopen(OUTPUT_FILE, "a");
     fprintf(output, "append() findName() %lf %lf\n", cpu_time1, cpu_time2);
     fclose(output);
 
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
-    /* Release the memory */
+    /*========== Release the memory ==========*/
 #ifndef OPT
     while (pHead != NULL) {
         e = pHead;
@@ -179,7 +178,7 @@ int main(int argc, char *argv[])
         free(e);
     }
 #else
-    // Free the allocated detail entry
+    /* Free the allocated detail entry */
     e = pHead;
     while (e != NULL) {
         if (e->dtl != NULL)
