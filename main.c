@@ -170,8 +170,11 @@ int main(int argc, char *argv[])
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
 #ifndef OPT
-    if (pHead->pNext) free(pHead->pNext);
-    free(pHead);
+    while (pHead != NULL) {
+        e = pHead;
+        pHead = pHead->next;
+        free(e);
+    }
 #else
     free(entry_pool);
     free(tid);
