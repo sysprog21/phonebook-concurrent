@@ -107,21 +107,22 @@ int main(int argc, char *argv[])
     for (int i = 0; i < THREAD_NUM; i++)
         pthread_join(threads[i], NULL);
 
-    entry *etmp = pHead;
+    /* Connect the linked list of each thread */
+    tmp = pHead;
     pHead = pHead->pNext;
-    free(etmp);
+    free(tmp);
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
             pHead = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
-                    thread_args[i]->lEntry_head->pNext->lastName, thread_args[i]->data_begin);
+                    pHead->lastName, thread_args[i]->data_begin);
         } else {
-            etmp->pNext = thread_args[i]->lEntry_head->pNext;
+            tmp->pNext = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
-                    thread_args[i]->lEntry_head->pNext->lastName, thread_args[i]->data_begin);
+                    tmp->pNext->lastName, thread_args[i]->data_begin);
         }
 
-        etmp = thread_args[i]->lEntry_tail;
+        tmp = thread_args[i]->lEntry_tail;
         dprintf("Connect %d tail string %s %p\n", i,
                 thread_args[i]->lEntry_tail->lastName, thread_args[i]->data_begin);
         dprintf("round %d\n", i);
