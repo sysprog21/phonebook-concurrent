@@ -16,7 +16,7 @@ all: $(EXEC)
 
 SRCS_common = main.c
 
-test/text_align: text_align.c test/test-text_align.c
+tools/text_align: text_align.c tools/tool-text_align.c
 	$(CC) $(CFLAGS_common) $^ -o $@
 
 phonebook_orig: $(SRCS_common) phonebook_orig.c phonebook_orig.h
