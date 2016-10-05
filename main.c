@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
     }
 #else
 
-#include "file.c"
+#include "text_align.h"
 #include "debug.h"
 #include <fcntl.h>
 #define ALIGN_FILE "align.txt"
-    file_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
+    text_align(DICT_FILE, ALIGN_FILE, MAX_LAST_NAME_SIZE);
     int fd = open(ALIGN_FILE, O_RDONLY | O_NONBLOCK);
     off_t fs = fsize(ALIGN_FILE);
 #endif
