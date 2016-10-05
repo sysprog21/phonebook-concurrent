@@ -180,6 +180,7 @@ int main(int argc, char *argv[])
     free(threads);
     free(app);
     munmap(map, file_size);
+    close(fd);
 #endif
     return 0;
 }
