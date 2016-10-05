@@ -99,8 +99,9 @@ int main(int argc, char *argv[])
     for (int i = 0; i < THREAD_NUM; i++)
         pthread_join(threads[i], NULL);
 
-    entry *etmp;
+    entry *etmp = pHead;
     pHead = pHead->pNext;
+    free(etmp);
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
             pHead = thread_args[i]->lEntry_head->pNext;
