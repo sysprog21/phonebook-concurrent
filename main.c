@@ -86,14 +86,14 @@ int main(int argc, char *argv[])
     pthread_setconcurrency(THREAD_NUM + 1);
 
     pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
-    append_a **app = (append_a **) malloc(sizeof(append_a *) * THREAD_NUM);
+    thread_arg **thread_args = (thread_arg **) malloc(sizeof(thread_arg *) * THREAD_NUM);
     for (int i = 0; i < THREAD_NUM; i++)
-        app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
-                              THREAD_NUM, entry_pool + i);
+        thread_args[i] = createThead_arg(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
+                                         THREAD_NUM, entry_pool + i);
 
     clock_gettime(CLOCK_REALTIME, &mid);
     for (int i = 0; i < THREAD_NUM; i++)
-        pthread_create( &threads[i], NULL, (void *) &append, (void *) app[i]);
+        pthread_create(&threads[i], NULL, (void *)&append, (void *)thread_args[i]);
 
     for (int i = 0; i < THREAD_NUM; i++)
         pthread_join(threads[i], NULL);
@@ -102,18 +102,18 @@ int main(int argc, char *argv[])
     pHead = pHead->pNext;
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
-            pHead = app[i]->pHead->pNext;
+            pHead = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
-                    app[i]->pHead->pNext->lastName, app[i]->ptr);
+                    thread_args[i]->lEntry_head->pNext->lastName, thread_args[i]->data_begin);
         } else {
-            etmp->pNext = app[i]->pHead->pNext;
+            etmp->pNext = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
-                    app[i]->pHead->pNext->lastName, app[i]->ptr);
+                    thread_args[i]->lEntry_head->pNext->lastName, thread_args[i]->data_begin);
         }
 
-        etmp = app[i]->pLast;
+        etmp = thread_args[i]->lEntry_tail;
         dprintf("Connect %d tail string %s %p\n", i,
-                app[i]->pLast->lastName, app[i]->ptr);
+                thread_args[i]->lEntry_tail->lastName, thread_args[i]->data_begin);
         dprintf("round %d\n", i);
     }
 
@@ -172,13 +172,13 @@ int main(int argc, char *argv[])
 #ifndef OPT
     while (pHead != NULL) {
         e = pHead;
-        pHead = pHead->next;
+        pHead = pHead->pNext;
         free(e);
     }
 #else
     free(entry_pool);
     free(threads);
-    free(app);
+    free(thread_args);
     munmap(map, file_size);
     close(fd);
 #endif

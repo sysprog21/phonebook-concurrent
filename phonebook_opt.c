@@ -26,21 +26,24 @@ entry *findName(char lastname[], entry *pHead)
     return NULL;
 }
 
-append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd,
-                       entry *start)
+thread_arg *createThead_arg(char *data_begin, char *data_end,
+                            int threadID, int numOfThread,
+                            entry *entryPool)
 {
-    append_a *app = (append_a *) malloc(sizeof(append_a));
+    thread_arg *new_arg = (thread_arg *) malloc(sizeof(thread_arg));
 
-    app->ptr = ptr;
-    app->eptr = eptr;
-    app->tid = tid;
-    app->nthread = ntd;
-    app->entryStart = start;
-
-    app->pHead = (app->pLast = app->entryStart);
-    return app;
+    new_arg->data_begin = data_begin;
+    new_arg->data_end = data_end;
+    new_arg->threadID = threadID;
+    new_arg->numOfThread = numOfThread;
+    new_arg->lEntryPool_begin = entryPool;
+    new_arg->lEntry_head = new_arg->lEntry_tail = entryPool;
+    return new_arg;
 }
 
+/**
+ * Generate a local linked list in thread.
+ */
 void append(void *arg)
 {
     struct timespec start, end;
@@ -48,20 +51,20 @@ void append(void *arg)
 
     clock_gettime(CLOCK_REALTIME, &start);
 
-    append_a *app = (append_a *) arg;
+    thread_arg *t_arg = (thread_arg *) arg;
 
     int count = 0;
-    entry *j = app->entryStart;
-    for (char *i = app->ptr; i < app->eptr;
-            i += MAX_LAST_NAME_SIZE * app->nthread,
-            j += app->nthread,count++) {
-        app->pLast->pNext = j;
-        app->pLast = app->pLast->pNext;
-
-        app->pLast->lastName = i;
-        dprintf("thread %d append string = %s\n",
-                app->tid, app->pLast->lastName);
-        app->pLast->pNext = NULL;
+    entry *j = t_arg->lEntryPool_begin;
+    for (char *i = t_arg->data_begin; i < t_arg->data_end;
+            i += MAX_LAST_NAME_SIZE * t_arg->numOfThread,
+            j += t_arg->numOfThread, count++) {
+        // Append the new at the end of the local linked list.
+        t_arg->lEntry_tail->pNext = j;
+        t_arg->lEntry_tail = t_arg->lEntry_tail->pNext;
+        t_arg->lEntry_tail->lastName = i;
+        t_arg->lEntry_tail->pNext = NULL;
+        dprintf("thread %d t_argend string = %s\n",
+                t_arg->threadID, t_arg->lEntry_tail->lastName);
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time = diff_in_second(start, end);

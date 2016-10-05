@@ -30,17 +30,19 @@ typedef struct __PHONE_BOOK_ENTRY {
 
 entry *findName(char lastname[], entry *pHead);
 
-typedef struct _append_a {
-    char *ptr;
-    char *eptr;
-    int tid;
-    int nthread;
-    entry *entryStart;
-    entry *pHead;
-    entry *pLast;
-} append_a;
+typedef struct _thread_argument {
+    char *data_begin;
+    char *data_end;
+    int threadID;
+    int numOfThread;
+    entry *lEntryPool_begin;    // The local entry pool
+    entry *lEntry_head;	// local entry linked list
+    entry *lEntry_tail;	// local entry linked list
+} thread_arg;
 
-append_a *new_append_a(char *ptr, char *eptr, int tid, int ntd, entry *start);
+thread_arg *createThead_arg(char *data_begin, char *data_end,
+                            int threadID, int numOfThread,
+                            entry *entryPool);
 
 void append(void *arg);
 
