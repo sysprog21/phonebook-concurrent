@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
     pthread_setconcurrency(THREAD_NUM + 1);
 
-    pthread_t *tid = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
+    pthread_t *threads = (pthread_t *) malloc(sizeof(pthread_t) * THREAD_NUM);
     append_a **app = (append_a **) malloc(sizeof(append_a *) * THREAD_NUM);
     for (int i = 0; i < THREAD_NUM; i++)
         app[i] = new_append_a(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
@@ -93,10 +93,10 @@ int main(int argc, char *argv[])
 
     clock_gettime(CLOCK_REALTIME, &mid);
     for (int i = 0; i < THREAD_NUM; i++)
-        pthread_create( &tid[i], NULL, (void *) &append, (void *) app[i]);
+        pthread_create( &threads[i], NULL, (void *) &append, (void *) app[i]);
 
     for (int i = 0; i < THREAD_NUM; i++)
-        pthread_join(tid[i], NULL);
+        pthread_join(threads[i], NULL);
 
     entry *etmp;
     pHead = pHead->pNext;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
     }
 #else
     free(entry_pool);
-    free(tid);
+    free(threads);
     free(app);
     munmap(map, file_size);
 #endif
