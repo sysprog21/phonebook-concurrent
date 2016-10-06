@@ -18,7 +18,7 @@ entry *findName(char lastname[], entry *pHead)
                 pHead->dtl = (pdetail) malloc(sizeof(detail));
             return pHead;
         }
-        dprintf("find string = %s\n", pHead->lastName);
+        DEBUG_LOG("find string = %s\n", pHead->lastName);
         pHead = pHead->pNext;
     }
     return NULL;
@@ -62,13 +62,13 @@ void append(void *arg)
         t_arg->lEntry_tail->lastName = i;
         t_arg->lEntry_tail->pNext = NULL;
         t_arg->lEntry_tail->dtl = NULL;
-        dprintf("thread %d t_argend string = %s\n",
-                t_arg->threadID, t_arg->lEntry_tail->lastName);
+        DEBUG_LOG("thread %d t_argend string = %s\n",
+                  t_arg->threadID, t_arg->lEntry_tail->lastName);
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time = diff_in_second(start, end);
 
-    dprintf("thread take %lf sec, count %d\n", cpu_time, count);
+    DEBUG_LOG("thread take %lf sec, count %d\n", cpu_time, count);
 
     pthread_exit(NULL);
 }

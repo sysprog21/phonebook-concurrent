@@ -105,18 +105,18 @@ int main(int argc, char *argv[])
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
             pHead = thread_args[i]->lEntry_head->pNext;
-            dprintf("Connect %d head string %s %p\n", i,
-                    pHead->lastName, thread_args[i]->data_begin);
+            DEBUG_LOG("Connect %d head string %s %p\n", i,
+                      pHead->lastName, thread_args[i]->data_begin);
         } else {
             e->pNext = thread_args[i]->lEntry_head->pNext;
-            dprintf("Connect %d head string %s %p\n", i,
-                    e->pNext->lastName, thread_args[i]->data_begin);
+            DEBUG_LOG("Connect %d head string %s %p\n", i,
+                      e->pNext->lastName, thread_args[i]->data_begin);
         }
 
         e = thread_args[i]->lEntry_tail;
-        dprintf("Connect %d tail string %s %p\n", i,
-                e->lastName, thread_args[i]->data_begin);
-        dprintf("round %d\n", i);
+        DEBUG_LOG("Connect %d tail string %s %p\n", i,
+                  e->lastName, thread_args[i]->data_begin);
+        DEBUG_LOG("round %d\n", i);
     }
     /* Stop timing */
     clock_gettime(CLOCK_REALTIME, &end);
