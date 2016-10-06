@@ -186,7 +186,6 @@ int main(int argc, char *argv[])
     /* Free the allocated detail entry */
     e = pHead;
     while (e != NULL) {
-        // If e->dtl is NULL, no operation is performed in free().
         free(e->dtl);
         e = e->pNext;
     }
