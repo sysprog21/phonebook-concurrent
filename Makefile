@@ -3,6 +3,10 @@ CFLAGS_common ?= -Wall -std=gnu99
 CFLAGS_orig = -O0
 CFLAGS_opt  = -O0 -pthread -g -pg
 
+ifdef CHECK_LEAK
+CFLAGS_common += -fsanitize=address -fno-omit-frame-pointer
+endif
+
 ifdef THREAD
 CFLAGS_opt  += -D THREAD_NUM=${THREAD}
 endif
