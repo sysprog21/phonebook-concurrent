@@ -76,7 +76,7 @@ void append(void *arg)
 void show_entry(entry *pHead)
 {
     while (pHead != NULL) {
-        printf("lastName = %s\n", pHead->lastName);
+        printf("%s", pHead->lastName);
         pHead = pHead->pNext;
     }
 }
