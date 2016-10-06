@@ -70,22 +70,16 @@ int main(int argc, char *argv[])
 
     /*========== Build the entry ==========*/
     entry *pHead, *e;
-    pHead = (entry *) malloc(sizeof(entry));
     printf("size of entry : %lu bytes\n", sizeof(entry));
-    e = pHead;
-    e->pNext = NULL;
 
-#if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
-#endif
-
-    clock_gettime(CLOCK_REALTIME, &start);
 #if defined(OPT)
     char *map;
-    entry *entry_pool, *tmp;
+    entry *entry_pool;
     pthread_t threads[THREAD_NUM];
     thread_arg *thread_args[THREAD_NUM];
 
+    /* Start timing */
+    clock_gettime(CLOCK_REALTIME, &start);
     /* Allocate the resource at first */
     map = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
     assert(map && "mmap error");
@@ -108,26 +102,35 @@ int main(int argc, char *argv[])
         pthread_join(threads[i], NULL);
 
     /* Connect the linked list of each thread */
-    tmp = pHead;
-    pHead = pHead->pNext;
-    free(tmp);
     for (int i = 0; i < THREAD_NUM; i++) {
         if (i == 0) {
             pHead = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
                     pHead->lastName, thread_args[i]->data_begin);
         } else {
-            tmp->pNext = thread_args[i]->lEntry_head->pNext;
+            e->pNext = thread_args[i]->lEntry_head->pNext;
             dprintf("Connect %d head string %s %p\n", i,
-                    tmp->pNext->lastName, thread_args[i]->data_begin);
+                    e->pNext->lastName, thread_args[i]->data_begin);
         }
 
-        tmp = thread_args[i]->lEntry_tail;
+        e = thread_args[i]->lEntry_tail;
         dprintf("Connect %d tail string %s %p\n", i,
-                thread_args[i]->lEntry_tail->lastName, thread_args[i]->data_begin);
+                e->lastName, thread_args[i]->data_begin);
         dprintf("round %d\n", i);
     }
+    /* Stop timing */
+    clock_gettime(CLOCK_REALTIME, &end);
 #else /* ! OPT */
+    pHead = (entry *) malloc(sizeof(entry));
+    e = pHead;
+    e->pNext = NULL;
+
+#if defined(__GNUC__)
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+#endif
+    /* Start timing */
+    clock_gettime(CLOCK_REALTIME, &start);
+
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -135,14 +138,15 @@ int main(int argc, char *argv[])
         i = 0;
         e = append(line, e);
     }
-#endif
-    clock_gettime(CLOCK_REALTIME, &end);
-    cpu_time1 = diff_in_second(start, end);
 
-#ifndef OPT
+    /* Stop timing */
+    clock_gettime(CLOCK_REALTIME, &end);
+
     /* close file as soon as possible */
     fclose(fp);
 #endif
+
+    cpu_time1 = diff_in_second(start, end);
 
     /*========== Find the entry ==========*/
     /* the givn last name to find */
