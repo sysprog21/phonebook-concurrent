@@ -16,7 +16,13 @@ CFLAGS_opt += -DDEBUG -g
 endif
 
 EXEC = phonebook_orig phonebook_opt
-all: $(EXEC)
+GIT_HOOKS := .git/hooks/applied
+.PHONY: all
+all: $(GIT_HOOKS) $(EXEC)
+
+$(GIT_HOOKS):
+	@scripts/install-git-hooks
+	@echo
 
 SRCS_common = main.c
 
