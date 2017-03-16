@@ -20,11 +20,12 @@ int text_align(const char *originFileName,
     printf("orginal file size = %ld\n", fsize(originFileName));
 
     FILE *fd_origin = fopen(originFileName, "r");
+    if (!fd_origin) return -1;
     FILE *fd_align = fopen(alignedFileName, "w+");
-
-    // Fail to open the file
-    if (!fd_origin || !fd_align)
+    if (!fd_align) {
+        fclose(fd_origin);
         return -1;
+    }
 
     char rbuf[MAX_BUFF_SIZE];
     int suffix;
