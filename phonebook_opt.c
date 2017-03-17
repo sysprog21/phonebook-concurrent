@@ -56,7 +56,7 @@ void append(void *arg)
     for (char *i = t_arg->data_begin; i < t_arg->data_end;
             i += MAX_LAST_NAME_SIZE * t_arg->numOfThread,
             j += t_arg->numOfThread, count++) {
-        // Append the new at the end of the local linked list.
+        /* Append the new at the end of the local linked list */
         t_arg->lEntry_tail->pNext = j;
         t_arg->lEntry_tail = t_arg->lEntry_tail->pNext;
         t_arg->lEntry_tail->lastName = i;

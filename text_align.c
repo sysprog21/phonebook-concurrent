@@ -32,14 +32,16 @@ int text_align(const char *originFileName,
 
     char *wbuf = (char *) malloc(sizeof(char) * padToLen);
 
-    // Read each line from input file and pad to "padToLen" characters.
+    /* Read each line from input file and pad to "padToLen" characters. */
     while (fgets(rbuf, sizeof(rbuf), fd_origin)) {
         memset(wbuf, '\0', padToLen);
 
         suffix = padToLen - strlen(rbuf);
-        // The length of input text is longer than the length to padding to.
-        // Warn the user, and still write to the output file but with only
-        // first "PadToLen" bytes.
+        /*
+         * The length of input text is longer than the length to padding to.
+         * Warn the user, and still write to the output file but with only
+         * first "PadToLen" bytes.
+         */
         if (suffix < 0)
             printf("Warning:"
                    " The length of %s is longer than %d.\n", rbuf, padToLen);

@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     struct timespec start, end;
     double cpu_time1, cpu_time2;
 
-    /*========== File preprocessing ==========*/
+    /* File preprocessing */
 #ifndef OPT
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     off_t file_size = fsize(ALIGN_FILE);
 #endif
 
-    /*========== Build the entry ==========*/
+    /* Build the entry */
     entry *pHead, *e;
     printf("size of entry : %lu bytes\n", sizeof(entry));
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 
     cpu_time1 = diff_in_second(start, end);
 
-    /*========== Find the entry ==========*/
+    /* Find the given entry */
     /* the givn last name to find */
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
 
-    /*========== Release the memory ==========*/
+    /* Release memory */
 #ifndef OPT
     while (pHead) {
         e = pHead;
