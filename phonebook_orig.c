@@ -8,7 +8,7 @@
 /* original version */
 entry *findName(char lastname[], entry *pHead)
 {
-    while (pHead != NULL) {
+    while (pHead) {
         if (strcasecmp(lastname, pHead->lastName) == 0)
             return pHead;
         pHead = pHead->pNext;

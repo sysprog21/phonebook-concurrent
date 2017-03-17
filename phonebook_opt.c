@@ -9,12 +9,12 @@
 entry *findName(char lastname[], entry *pHead)
 {
     size_t len = strlen(lastname);
-    while (pHead != NULL) {
+    while (pHead) {
         if (strncasecmp(lastname, pHead->lastName, len) == 0
                 && (pHead->lastName[len] == '\n' ||
                     pHead->lastName[len] == '\0')) {
             pHead->lastName[len] = '\0';
-            if (pHead->dtl == NULL)
+            if (!pHead->dtl)
                 pHead->dtl = (pdetail) malloc(sizeof(detail));
             return pHead;
         }
@@ -75,7 +75,7 @@ void append(void *arg)
 
 void show_entry(entry *pHead)
 {
-    while (pHead != NULL) {
+    while (pHead) {
         printf("%s", pHead->lastName);
         pHead = pHead->pNext;
     }

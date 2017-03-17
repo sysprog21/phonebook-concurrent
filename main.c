@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
 
     /*========== Release the memory ==========*/
 #ifndef OPT
-    while (pHead != NULL) {
+    while (pHead) {
         e = pHead;
         pHead = pHead->pNext;
         free(e);
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 #else
     /* Free the allocated detail entry */
     e = pHead;
-    while (e != NULL) {
+    while (e) {
         free(e->dtl);
         e = e->pNext;
     }
