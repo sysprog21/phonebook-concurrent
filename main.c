@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
     pthread_setconcurrency(THREAD_NUM + 1);
     for (int i = 0; i < THREAD_NUM; i++)
         // Created by malloc, remeber to free them.
-        thread_args[i] = createThead_arg(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
-                                         THREAD_NUM, entry_pool + i);
+        thread_args[i] = createThread_arg(map + MAX_LAST_NAME_SIZE * i, map + file_size, i,
+                                          THREAD_NUM, entry_pool + i);
     /* Deliver the jobs to all threads and wait for completing */
     clock_gettime(CLOCK_REALTIME, &mid);
     for (int i = 0; i < THREAD_NUM; i++)

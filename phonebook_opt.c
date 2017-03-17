@@ -24,9 +24,9 @@ entry *findName(char lastname[], entry *pHead)
     return NULL;
 }
 
-thread_arg *createThead_arg(char *data_begin, char *data_end,
-                            int threadID, int numOfThread,
-                            entry *entryPool)
+thread_arg *createThread_arg(char *data_begin, char *data_end,
+                             int threadID, int numOfThread,
+                             entry *entryPool)
 {
     thread_arg *new_arg = (thread_arg *) malloc(sizeof(thread_arg));
 
